@@ -1,13 +1,36 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f1f1f1;
+  margin: 0;
+  padding: 30px;
+}
+
 .container {
-    width: 500px; /* Define the width of the area */
-    height: 500px; /* Define the height of the area */
-    position: relative; /* Position relative for absolute positioning of cubes */
-    border: 1px solid #000; /* Optional: border to visualize the area */
+  position: relative;
+  width: 600px;
+  height: 400px;
+  background-color: #fff;
+  border: 3px solid #333;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .cube {
-    width: 50px; /* Width of each cube */
-    height: 50px; /* Height of each cube */
-    background-color: blue; /* Color of the cubes */
-    position: absolute; /* Position absolute to place cubes anywhere in the container */
+  width: 80px;
+  height: 80px;
+  background-color: #4caf50;
+  margin: 10px;
+  border-radius: 8px;
+  cursor: grab;
+  transition: transform 0.1s ease;
+}
+
+.cube:active {
+  cursor: grabbing;
+  transform: scale(1.1);
 }
