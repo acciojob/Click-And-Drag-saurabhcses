@@ -1,58 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Click and Drag</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draggable Cubes</title>
+    <style>
+        .container {
+            width: 500px; /* Define the width of the area */
+            height: 500px; /* Define the height of the area */
+            position: relative; /* Position relative for absolute positioning of cubes */
+            border: 1px solid #000; /* Optional: border to visualize the area */
+        }
+
+        .cube {
+            width: 50px; /* Width of each cube */
+            height: 50px; /* Height of each cube */
+            background-color: blue; /* Color of the cubes */
+            position: absolute; /* Position absolute to place cubes anywhere in the container */
+            cursor: pointer; /* Change cursor to pointer */
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="cube"></div>
-    <div class="cube"></div>
-    <div class="cube"></div>
-    <div class="cube"></div>
-</div>
+    <div class="container">
+        <div class="cube" style="top: 20px; left: 20px;"></div>
+        <div class="cube" style="top: 80px; left: 80px;"></div>
+        <div class="cube" style="top: 140px; left: 140px;"></div>
+        <div class="cube" style="top: 200px; left: 200px;"></div>
+    </div>
 
-<script>
-    const cubes = document.querySelectorAll('.cube');
-let activeCube = null;
-let offsetX, offsetY;
+    <script>
+        const cubes = document.querySelectorAll('.cube');
+        let activeCube = null;
+        let offsetX, offsetY;
 
-cubes.forEach(cube => {
-    cube.addEventListener('mousedown', (e) => {
-        activeCube = cube;
-        offsetX = e.clientX - cube.getBoundingClientRect().left;
-        offsetY = e.clientY - cube.getBoundingClientRect().top;
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-    });
-});
+        cubes.forEach(cube => {
+            cube.addEventListener('mousedown', (e) => {
+                activeCube = cube;
+                offsetX = e.clientX - cube.getBoundingClientRect().left;
+                offsetY = e.clientY - cube.getBoundingClientRect().top;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        });
 
-function onMouseMove(e) {
-    if (activeCube) {
-        let x = e.clientX - offsetX;
-        let y = e.clientY - offsetY;
+        function onMouseMove(e) {
+            if (activeCube) {
+                let x = e.clientX - offsetX;
+                let y = e.clientY - offsetY;
 
-        // Add boundary checks here
-        const containerRect = document.querySelector('.container').getBoundingClientRect();
-        const cubeRect = activeCube.getBoundingClientRect();
+                // Add boundary checks here
+                const containerRect = document.querySelector('.container').getBoundingClientRect();
+                const cubeRect = activeCube.getBoundingClientRect();
 
-        if (x < containerRect.left) x = containerRect.left;
-        if (y < containerRect.top) y = containerRect.top;
-        if (x + cubeRect.width > containerRect.right) x = containerRect.right - cubeRect.width;
-        if (y + cubeRect.height > containerRect.bottom) y = containerRect.bottom - cubeRect.height;
+                if (x < containerRect.left) x = containerRect.left;
+                if (y < containerRect.top) y = containerRect.top;
+                if (x + cubeRect.width > containerRect.right) x = containerRect.right - cubeRect.width;
+                if (y + cubeRect.height > containerRect.bottom) y = containerRect.bottom - cubeRect.height;
 
-        activeCube.style.left = `${x}px`;
-        activeCube.style.top = `${y}px`;
-    }
-}
+                activeCube.style.left = `${x - containerRect.left}px`;
+                activeCube.style.top = `${y - containerRect.top}px`;
+            }
+        }
 
-function onMouseUp() {
-    activeCube = null;
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-}
-</script>
-
-  </body>
+        function onMouseUp() {
+            activeCube = null;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+    </script>
+</body>
 </html>
