@@ -6,79 +6,52 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="items">
-    <div class="item item1">01</div>
-    <div class="item item2">02</div>
-    <div class="item item3">03</div>
-    <div class="item item4">04</div>
-    <div class="item item5">05</div>
-    <div class="item item6">06</div>
-    <div class="item item7">07</div>
-    <div class="item item8">08</div>
-    <div class="item item9">09</div>
-    <div class="item item10">10</div>
-    <div class="item item11">11</div>
-    <div class="item item12">12</div>
-    <div class="item item13">13</div>
-    <div class="item item14">14</div>
-    <div class="item item15">15</div>
-    <div class="item item16">16</div>
-    <div class="item item17">17</div>
-    <div class="item item18">18</div>
-    <div class="item item19">19</div>
-    <div class="item item20">20</div>
-    <div class="item item21">21</div>
-    <div class="item item22">22</div>
-    <div class="item item23">23</div>
-    <div class="item item24">24</div>
-    <div class="item item25">25</div>
-  </div>
+  <div class="container">
+    <div class="cube"></div>
+    <div class="cube"></div>
+    <div class="cube"></div>
+    <div class="cube"></div>
+</div>
 
 <script>
-    // Select the container for the draggable items
-    const slider = document.querySelector('.items');
-    // A flag to check if the mouse button is pressed
-    let isDown = false;
-    // The initial horizontal position of the mouse when clicked
-    let startX;
-    // The initial horizontal scroll position of the container
-    let scrollLeft;
+    const cubes = document.querySelectorAll('.cube');
+let activeCube = null;
+let offsetX, offsetY;
 
-    // Event listener for when the mouse button is pressed down
-    slider.addEventListener('mousedown', (e) => {
-        isDown = true;
-        slider.classList.add('active');
-        // Get the initial mouse position relative to the slider element
-        startX = e.pageX - slider.offsetLeft;
-        // Store the current scroll position
-        scrollLeft = slider.scrollLeft;
+cubes.forEach(cube => {
+    cube.addEventListener('mousedown', (e) => {
+        activeCube = cube;
+        offsetX = e.clientX - cube.getBoundingClientRect().left;
+        offsetY = e.clientY - cube.getBoundingClientRect().top;
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
     });
+});
 
-    // Event listener for when the mouse leaves the slider area
-    slider.addEventListener('mouseleave', () => {
-        isDown = false;
-        slider.classList.remove('active');
-    });
+function onMouseMove(e) {
+    if (activeCube) {
+        let x = e.clientX - offsetX;
+        let y = e.clientY - offsetY;
 
-    // Event listener for when the mouse button is released
-    slider.addEventListener('mouseup', () => {
-        isDown = false;
-        slider.classList.remove('active');
-    });
+        // Add boundary checks here
+        const containerRect = document.querySelector('.container').getBoundingClientRect();
+        const cubeRect = activeCube.getBoundingClientRect();
 
-    // Event listener for when the mouse moves
-    slider.addEventListener('mousemove', (e) => {
-        // If the mouse button is not pressed, do nothing
-        if (!isDown) return;
-        // Prevent default browser behavior (like text selection)
-        e.preventDefault();
-        // Get the current horizontal mouse position
-        const x = e.pageX - slider.offsetLeft;
-        // Calculate the distance the mouse has moved from the starting point
-        const walk = (x - startX) * 3; // Multiply by 3 for faster scrolling
-        // Update the scroll position of the slider
-        slider.scrollLeft = scrollLeft - walk;
-    });
+        if (x < containerRect.left) x = containerRect.left;
+        if (y < containerRect.top) y = containerRect.top;
+        if (x + cubeRect.width > containerRect.right) x = containerRect.right - cubeRect.width;
+        if (y + cubeRect.height > containerRect.bottom) y = containerRect.bottom - cubeRect.height;
+
+        activeCube.style.left = `${x}px`;
+        activeCube.style.top = `${y}px`;
+    }
+}
+
+function onMouseUp() {
+    activeCube = null;
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+}
 </script>
 
   </body>
