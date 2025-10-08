@@ -1,73 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draggable Cubes</title>
-    <style>
-        .container {
-            width: 500px; /* Define the width of the area */
-            height: 500px; /* Define the height of the area */
-            position: relative; /* Position relative for absolute positioning of cubes */
-            border: 1px solid #000; /* Optional: border to visualize the area */
-        }
+  <meta charset="UTF-8">
+  <title>Click and Drag</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+    }
 
-        .cube {
-            width: 50px; /* Width of each cube */
-            height: 50px; /* Height of each cube */
-            background-color: blue; /* Color of the cubes */
-            position: absolute; /* Position absolute to place cubes anywhere in the container */
-            cursor: pointer; /* Change cursor to pointer */
-        }
-    </style>
+    .items {
+      width: 100%;
+      overflow-x: auto;
+      white-space: nowrap;
+      margin-bottom: 40px;
+      border: 2px solid #333;
+      padding: 10px;
+      background: #fff;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .items.active {
+      cursor: grabbing;
+    }
+
+    .item {
+      display: inline-block;
+      width: 80px;
+      height: 80px;
+      background-color: #3498db;
+      color: #fff;
+      font-size: 18px;
+      text-align: center;
+      line-height: 80px;
+      margin-right: 10px;
+      border-radius: 6px;
+    }
+
+    #container {
+      position: relative;
+      width: 400px;
+      height: 300px;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .cube {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      background-color: #e67e22;
+      border-radius: 6px;
+      cursor: grab;
+      transition: box-shadow 0.2s;
+    }
+
+    .cube.dragging {
+      cursor: grabbing;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="cube" style="top: 20px; left: 20px;"></div>
-        <div class="cube" style="top: 80px; left: 80px;"></div>
-        <div class="cube" style="top: 140px; left: 140px;"></div>
-        <div class="cube" style="top: 200px; left: 200px;"></div>
-    </div>
 
-    <script>
-        const cubes = document.querySelectorAll('.cube');
-        let activeCube = null;
-        let offsetX, offsetY;
+  <div class="items">
+    <div class="item">01</div>
+    <div class="item">02</div>
+    <div class="item">03</div>
+    <div class="item">04</div>
+    <div class="item">05</div>
+    <div class="item">06</div>
+    <div class="item">07</div>
+    <div class="item">08</div>
+    <div class="item">09</div>
+    <div class="item">10</div>
+    <div class="item">11</div>
+    <div class="item">12</div>
+    <div class="item">13</div>
+    <div class="item">14</div>
+    <div class="item">15</div>
+    <div class="item">16</div>
+    <div class="item">17</div>
+    <div class="item">18</div>
+    <div class="item">19</div>
+    <div class="item">20</div>
+    <div class="item">21</div>
+    <div class="item">22</div>
+    <div class="item">23</div>
+    <div class="item">24</div>
+    <div class="item">25</div>
+  </div>
 
-        cubes.forEach(cube => {
-            cube.addEventListener('mousedown', (e) => {
-                activeCube = cube;
-                offsetX = e.clientX - cube.getBoundingClientRect().left;
-                offsetY = e.clientY - cube.getBoundingClientRect().top;
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            });
-        });
+  <!-- Draggable cubes container -->
+  <div id="container"></div>
 
-        function onMouseMove(e) {
-            if (activeCube) {
-                let x = e.clientX - offsetX;
-                let y = e.clientY - offsetY;
+  <script>
+    // --- Drag-scroll for .items ---
+    const items = document.querySelector('.items');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
 
-                // Add boundary checks here
-                const containerRect = document.querySelector('.container').getBoundingClientRect();
-                const cubeRect = activeCube.getBoundingClientRect();
+    items.addEventListener('mousedown', (e) => {
+      isDown = true;
+      items.classList.add('active');
+      startX = e.pageX - items.offsetLeft;
+      scrollLeft = items.scrollLeft;
+    });
 
-                if (x < containerRect.left) x = containerRect.left;
-                if (y < containerRect.top) y = containerRect.top;
-                if (x + cubeRect.width > containerRect.right) x = containerRect.right - cubeRect.width;
-                if (y + cubeRect.height > containerRect.bottom) y = containerRect.bottom - cubeRect.height;
+    items.addEventListener('mouseleave', () => {
+      isDown = false;
+      items.classList.remove('active');
+    });
 
-                activeCube.style.left = `${x - containerRect.left}px`;
-                activeCube.style.top = `${y - containerRect.top}px`;
-            }
-        }
+    items.addEventListener('mouseup', () => {
+      isDown = false;
+      items.classList.remove('active');
+    });
 
-        function onMouseUp() {
-            activeCube = null;
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-        }
-    </script>
+    items.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - items.offsetLeft;
+      const walk = (x - startX) * 2; // Adjust speed
+      items.scrollLeft = scrollLeft - walk;
+    });
+
+    // --- Draggable cubes ---
+    const container = document.getElementById('container');
+    const CUBE_SIZE = 70;
+    const GAP = 20;
+    const COLS = 4;
+    const ROWS = 3;
+
+    for (let i = 0; i < COLS * ROWS; i++) {
+      const cube = document.createElement('div');
+      cube.className = 'cube';
+      const row = Math.floor(i / COLS);
+      const col = i % COLS;
+      cube.style.left = `${col * (CUBE_SIZE + GAP)}px`;
+      cube.style.top = `${row * (CUBE_SIZE + GAP)}px`;
+      container.appendChild(cube);
+    }
+
+    let selectedCube = null;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    container.addEventListener('mousedown', (e) => {
+      if (e.target.classList.contains('cube')) {
+        selectedCube = e.target;
+        const rect = selectedCube.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        selectedCube.classList.add('dragging');
+      }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (selectedCube) {
+        const containerRect = container.getBoundingClientRect();
+        let x = e.clientX - containerRect.left - offsetX;
+        let y = e.clientY - containerRect.top - offsetY;
+
+        // Clamp to bounds
+        x = Math.max(0, Math.min(x, container.clientWidth - CUBE_SIZE));
+        y = Math.max(0, Math.min(y, container.clientHeight - CUBE_SIZE));
+
+        selectedCube.style.left = `${x}px`;
+        selectedCube.style.top = `${y}px`;
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (selectedCube) {
+        selectedCube.classList.remove('dragging');
+        selectedCube = null;
+      }
+    });
+  </script>
 </body>
 </html>
+
